@@ -1,0 +1,26 @@
+
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: 80%;
+}
+
+.carousel-wrapper {
+  width: 100%;
+  max-width: 1920px;
+}
+
+.carousel-img {
+  object-fit: cover;
+  height: 680px;
+}
+
+.botao-pesquisa {
+    background-color: white;
+    color: black;
+}
+
+.texto-footer {
+  font-size: 1em;
+}
