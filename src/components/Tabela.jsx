@@ -4,11 +4,11 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-import pessoasDataset from '../dataset/pessoas';
+import instituicoesDataSet from '../dataset/instituicoes';
 import { Col, Row } from 'react-bootstrap';
-import cidades from '../dataset/municipios.json'
-import estados from '../dataset/estados.json'
-import regiao from '../dataset/regiao.json'
+import cidades from '../dataset/municipios.json';
+import estados from '../dataset/estados.json';
+import regiao from '../dataset/regiao.json';
 
 const Tabela = () => {
 
@@ -18,15 +18,48 @@ const Tabela = () => {
   const estadoAtual = estados.data.find((estado) => estado.Uf === estadoSelecionado);
   const nomeRegiao = regiao.data.find((r) => r.Id === estadoAtual?.Regiao)?.Nome || '';
 
+  const [formData, setFormData] = useState ({
+    codig: '',
+    nome: '',
+    estado: '',
+    cidade: '',
+    regiao: '',
+  });
+
+  function cadastroInstituicao() {
+    const novaInstituicao = {
+      id: Date.now(), // ou outro método para gerar ID
+      codigo: formData.codigo,
+      nome: formData.nome,
+      estado: formData.estado,
+      cidade: formData.cidade,
+      regiao: formData.regiao,
+    };
+
+    setInstituicoes((prev) => [...prev, novaInstituicao]);
+    setFormData({ codigo: '', nome: '', estado: '', cidade: '', regiao: '' });
+    setEstadoSelecionado('');
+    setCidadesFiltradas([]);
+    fecharModal();
+  }
 
   const handleEstadoChange = (e) => {
-  const sigla = e.target.value;
-  setEstadoSelecionado(sigla);
+    const sigla = e.target.value;
+    setEstadoSelecionado(sigla);
 
-  const cidadesFiltradas = cidades.data.filter(
-    (cidade) => cidade.Uf === sigla
-  );
+    const cidadesFiltradas = cidades.data.filter(
+      (cidade) => cidade.Uf === sigla
+    );
     setCidadesFiltradas(cidadesFiltradas);
+
+    const estadoAtual = estados.data.find((estado) => estado.Uf === sigla);
+    const nomeRegiao = regiao.data.find((r) => r.Id === estadoAtual?.Regiao)?.Nome || '';
+
+    setFormData((prev) => ({
+      ...prev,
+      estado: sigla,
+      regiao: nomeRegiao,
+    }));
   };
 
 
@@ -36,15 +69,13 @@ const Tabela = () => {
   const abrirModal = () => setMostrarModal(true);
   const fecharModal = () => setMostrarModal(false);
 
-  let[pessoas, setPessoas] = useState(pessoasDataset);
-
-  const handleClick = (event) => {};
+  let[instituicoes, setInstituicoes] = useState(instituicoesDataSet);
 
   const removerPessoa = (id) => {
-    let pessoasAtualizadas = pessoas.filter((pessoa, i) => {
-      return pessoa.id == id ? false : true;
+    let pessoasAtualizadas = instituicoes.filter((instituicao, i) => {
+      return instituicao.id == id ? false : true;
     });
-    setPessoas(pessoasAtualizadas)
+    setInstituicoes(pessoasAtualizadas)
   };
 
   return (
@@ -62,29 +93,29 @@ const Tabela = () => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Codigo</th>
             <th>Nome</th>
-            <th>CPF</th>
-            <th>Nascimento</th>
+            <th>Estado</th>
+            <th>Cidade</th>
+            <th>Regiao</th>
             <th>Opções</th>
           </tr>
         </thead>
         <tbody>
-          {pessoas.map((pessoa, i) => {
+          {instituicoes.map((instituicao, i) => {
             return (
               <tr key={i}>
-                <td>{pessoa.id}</td>
-                <td>{pessoa.nome}</td>
-                <td>{pessoa.sobrenome}</td>
-                <td>{pessoa.cpf}</td>
-                <td>{pessoa.nascimento}</td>
+                <td>{instituicao.codigo}</td>
+                <td>{instituicao.nome}</td>
+                <td>{instituicao.estado}</td>
+                <td>{instituicao.cidade}</td>
+                <td>{instituicao.regiao}</td>
                 <td>
                   <Button
                     className={'m-2'}
                     variant="danger"
                     onClick={(event) => {
-                      removerPessoa(pessoa.id);
+                      removerPessoa(instituicao.id);
                     }}
                   >
                     Remover
@@ -113,6 +144,8 @@ const Tabela = () => {
             controlId="floatingInput"
             label="Codigo"
             className="mb-3"
+            value={formData.codigo}
+            onChange={(e) => setFormData({...formData, codigo: e.target.value})}
             >
             <Form.Control type="number" placeholder="#"/>
           </FloatingLabel>
@@ -120,7 +153,13 @@ const Tabela = () => {
 
           <Col md={8}>
           <FloatingLabel controlId="nome" label="Nome">
-            <Form.Control className='mb-3' type="text" placeholder="nome"/>
+            <Form.Control 
+            className='mb-3' 
+            type="text" 
+            placeholder="nome" 
+            value={formData.nome} 
+            onChange={(e) => 
+            setFormData({...formData, nome: e.target.value})}/>
           </FloatingLabel>
           </Col>
 
@@ -149,6 +188,8 @@ const Tabela = () => {
                 <Form.Select
                   aria-label="Selecione a cidade"
                   disabled={!estadoSelecionado}
+                  value={formData.cidade}
+                  onChange={(e) => setFormData({...formData, cidade: e.target.value})}
                 >
                   <option value="">Selecione</option>
                   {cidadesFiltradas.map((cidade) => (
@@ -178,7 +219,7 @@ const Tabela = () => {
           <Button variant="secondary" onClick={fecharModal}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={fecharModal}>
+          <Button variant="primary" onClick={cadastroInstituicao}>
             Adicionar
           </Button>
         </Modal.Footer>
