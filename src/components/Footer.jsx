@@ -1,10 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Stack, Image, Nav } from 'react-bootstrap';
-import './Main.css'
+import './Main.css';
 
 function Footer() {
   return (
-      <footer>
+      <footer className=''>
         <Container className='containerCarrossel' fluid>
           <Row className="bg-dark text-white p-4">
             <Col className="mx-5">

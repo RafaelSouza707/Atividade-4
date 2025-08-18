@@ -88,7 +88,7 @@ const Tabela = () => {
   const fecharModal = () => setMostrarModal(false);
 
   return (
-    <div className='p-4'>
+    <div className='p-4' >
       <div className='mb-2 d-flex'>
         <Button
           variant="primary"
